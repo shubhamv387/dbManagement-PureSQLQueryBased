@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Bootstrap CSS cdn -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <title>Database Management</title>
+  </head>
+  <body>
+    <div
+      id="insertDataFormHTMLDiv"
+      class="position-fixed m-0 p-0"
+      style="
+        height: 100vh;
+        width: 100vw;
+        z-index: 999;
+        background: #00000092;
+        display: none;
+      "
+    ></div>
+    <div
+      id="createTableFormHTMLDiv"
+      class="position-fixed m-0 p-0"
+      style="
+        height: 100vh;
+        width: 100vw;
+        z-index: 999;
+        background: #00000092;
+        display: none;
+      "
+    ></div>
+
+    <div class="container-fluid w-100" style="height: 90vh">
+      <h2 class="text-center pt-2 text-capitalize">Database Management</h2>
+      <div class="row h-100 p-5 pt-4">
+        <div
+          id="leftDiv"
+          class="col-2 h-100 border border-1 d-flex flex-column justify-content-between py-3"
+        >
+          <ul id="tableList" class="list-unstyled list-group"></ul>
+          <button id="createTable" class="btn btn-warning">Create Table</button>
+        </div>
+        <div id="rightDiv" class="col-10 position-relative"></div>
+      </div>
+    </div>
+  </body>
+
+  <!-- Axios cdn -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"
+    integrity="sha512-aoTNnqZcT8B4AmeCFmiSnDlc4Nj/KPaZyB5G7JnOnUEkdNpCZs1LCankiYi01sLTyWy+m2P+W4XM+BuQ3Q4/Dg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
+
+  <!-- Bootstrap JS cdn -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"
+  ></script>
+  <script src="./main.js"></script>
+</html>
