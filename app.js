@@ -11,6 +11,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
+app.get("/favicon.ico", (req, res) => {
+  res.status(204).end();
+});
+
 // @desc Create a new table
 app.post("/", async (req, res, next) => {
   const { tableName, columns } = req.body;
@@ -134,7 +138,7 @@ app.get("/:tableName", async (req, res, next) => {
     }
     res.status(200).json({ success: true, result: result[0], tableDesc });
   } catch (error) {
-    console.log(error.message);
+    console.log(error.message.underline.red);
     res.status(500).json({ success: false, message: "Intername server error" });
   }
 });

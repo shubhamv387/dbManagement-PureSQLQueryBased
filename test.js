@@ -28,4 +28,8 @@ for (let key in obj) {
   if (key !== "tableName") valArray.push(obj[key]);
 }
 
-console.log(valArray);
+// console.log(valArray);
+
+const str = "e-Mail";
+
+console.log(str.toLowerCase().includes("mail"));

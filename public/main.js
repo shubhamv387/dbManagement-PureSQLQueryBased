@@ -171,7 +171,7 @@ createTable.addEventListener("click", () => {
   });
 });
 
-async function showTables(tableName) {
+function showTables(tableName) {
   const createdTableName = document.createElement("li");
   createdTableName.className = "list-group-item list-group-item-info";
   createdTableName.style.cursor = "pointer";
@@ -181,59 +181,60 @@ async function showTables(tableName) {
   createdTableName.addEventListener("click", impFun);
 
   async function impFun() {
-    const { data } = await axios.get(`http://localhost:5050/${tableName}`);
+    try {
+      const { data } = await axios.get(`http://localhost:5050/${tableName}`);
 
-    console.log(Array.from(rightDiv.children).length);
-    if (Array.from(rightDiv.children).length > 1) {
-      document.getElementById("dbTableDetails").remove();
-      document.getElementById("insertData").remove();
-    }
-    if (Array.from(rightDiv.children).length == 1) {
-      document.getElementById("insertData").remove();
-    }
+      console.log(Array.from(rightDiv.children).length);
+      if (Array.from(rightDiv.children).length > 1) {
+        document.getElementById("dbTableDetails").remove();
+        document.getElementById("insertData").remove();
+      }
+      if (Array.from(rightDiv.children).length == 1) {
+        document.getElementById("insertData").remove();
+      }
 
-    const insertData = document.createElement("button");
-    insertData.className = "btn btn-warning fw-bold text-uppercase mb-3";
-    insertData.setAttribute("id", "insertData");
-    insertData.textContent = `Insert Data into ${tableName} table`;
-    rightDiv.appendChild(insertData);
+      const insertData = document.createElement("button");
+      insertData.className = "btn btn-warning fw-bold text-uppercase mb-3";
+      insertData.setAttribute("id", "insertData");
+      insertData.textContent = `Insert Data into ${tableName} table`;
+      rightDiv.appendChild(insertData);
 
-    const insertDataFormHTMLDiv = document.getElementById(
-      "insertDataFormHTMLDiv"
-    );
+      const insertDataFormHTMLDiv = document.getElementById(
+        "insertDataFormHTMLDiv"
+      );
 
-    insertData.addEventListener("click", async () => {
-      try {
-        console.log(data.tableDesc);
-        insertDataFormHTMLDiv.style.display = "block";
+      insertData.addEventListener("click", async () => {
+        try {
+          console.log(data.tableDesc);
+          insertDataFormHTMLDiv.style.display = "block";
 
-        const insertDataFormDiv = document.createElement("div");
-        insertDataFormDiv.setAttribute("id", "insertDataFormDiv");
-        insertDataFormDiv.className = "position-absolute";
-        insertDataFormDiv.setAttribute(
-          "style",
-          `
+          const insertDataFormDiv = document.createElement("div");
+          insertDataFormDiv.setAttribute("id", "insertDataFormDiv");
+          insertDataFormDiv.className = "position-absolute";
+          insertDataFormDiv.setAttribute(
+            "style",
+            `
         top: 35%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 750px;
       `
-        );
+          );
 
-        function typeIdentify(type) {
-          switch (type) {
-            case "varchar(255)":
-              return "text";
-            case "int":
-              return "number";
-            case "decimal(10,2)":
-              return "number";
-            default:
-              throw new Error("DataType not defined");
+          function typeIdentify(type) {
+            switch (type) {
+              case "varchar(255)":
+                return "text";
+              case "int":
+                return "number";
+              case "decimal(10,2)":
+                return "number";
+              default:
+                throw new Error("DataType not defined");
+            }
           }
-        }
 
-        insertDataFormDiv.innerHTML = `<form
+          insertDataFormDiv.innerHTML = `<form
         id="inserdDataSubmitForm"
         class="form-control bg-light px-5 py-4 position-relative"
       >
@@ -259,125 +260,132 @@ async function showTables(tableName) {
         </div>
       </form>`;
 
-        insertDataFormHTMLDiv.appendChild(insertDataFormDiv);
+          insertDataFormHTMLDiv.appendChild(insertDataFormDiv);
 
-        data.tableDesc.forEach((desc) => {
-          // console.log(desc);
-          const div = document.createElement("div");
-          div.className = "col-md-6";
-          div.innerHTML = `<label for='${desc.Field}' class="form-label mb-1">${
-            desc.Field
-          }:</label>
+          data.tableDesc.forEach((desc) => {
+            // console.log(desc);
+            const div = document.createElement("div");
+            div.className = "col-md-6";
+            div.innerHTML = `<label for='${
+              desc.Field
+            }' class="form-label mb-1">${desc.Field}:</label>
               <input
                 required
                 id='${desc.Field}'
                 name='${desc.Field}'
-                type='${typeIdentify(desc.Type)}'
+                type='${
+                  desc.Field.toLowerCase().includes("mail")
+                    ? "email"
+                    : typeIdentify(desc.Type)
+                }'
                 class="form-control"
                 placeholder='${desc.Field}'
               />`;
-          // console.log(div);
-          document.getElementById("tableDescRow").appendChild(div);
-        });
-        const submitBtnDiv = document.createElement("div");
-        submitBtnDiv.className = "col-12";
-        submitBtnDiv.innerHTML = `<button type="submit" class="btn btn-success">SUBMIT</button>`;
-        document.getElementById("tableDescRow").appendChild(submitBtnDiv);
-
-        const inserdDataSubmitForm = document.getElementById(
-          "inserdDataSubmitForm"
-        );
-        inserdDataSubmitForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const formData = new FormData(inserdDataSubmitForm);
-          const formDataObject = { tableName };
-
-          formData.forEach(function (value, key) {
-            formDataObject[key] = value;
+            // console.log(div);
+            document.getElementById("tableDescRow").appendChild(div);
           });
-          console.log(formDataObject);
-          try {
-            const { data } = await axios.post(
-              "http://localhost:5050/add-data",
-              formDataObject
-            );
-            console.log(data);
-            if (!data.success) return alert("something went wrong");
+          const submitBtnDiv = document.createElement("div");
+          submitBtnDiv.className = "col-12";
+          submitBtnDiv.innerHTML = `<button type="submit" class="btn btn-success">SUBMIT</button>`;
+          document.getElementById("tableDescRow").appendChild(submitBtnDiv);
 
-            document.getElementById("insertDataFormDiv").remove();
-            document.getElementById("insertDataFormHTMLDiv").style.display =
-              "none";
-            impFun();
-            alert(data.message);
-          } catch (error) {
-            console.log(error);
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    });
+          const inserdDataSubmitForm = document.getElementById(
+            "inserdDataSubmitForm"
+          );
+          inserdDataSubmitForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(inserdDataSubmitForm);
+            const formDataObject = { tableName };
 
-    if (data.result.length === 0) {
-      return alert(`No data found in ${tableName} table!`);
-    }
+            formData.forEach(function (value, key) {
+              formDataObject[key] = value;
+            });
+            console.log(formDataObject);
+            try {
+              const { data } = await axios.post(
+                "http://localhost:5050/add-data",
+                formDataObject
+              );
+              console.log(data);
+              if (!data.success) return alert("something went wrong");
 
-    const table = document.createElement("table");
-
-    table.className = "w-100 table table-bordered";
-    table.setAttribute("id", "dbTableDetails");
-
-    // Create table headers dynamically based on the data keys
-    const thead = document.createElement("thead");
-    const headerRow = document.createElement("tr");
-    const headerKeys = Object.keys(data.result[0]);
-
-    headerKeys.forEach((key) => {
-      const th = document.createElement("th");
-      if (key !== "updatedAt") {
-        th.textContent = key;
-        headerRow.appendChild(th);
-      }
-    });
-
-    const action = document.createElement("th");
-    action.textContent = "action";
-    headerRow.appendChild(action);
-
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
-
-    // Create table body with data rows
-    const tbody = document.createElement("tbody");
-    data.result.forEach((item) => {
-      const row = document.createElement("tr");
-      headerKeys.forEach((key) => {
-        // console.log(item.id);
-        const td = document.createElement("td");
-        if (key !== "updatedAt") {
-          td.textContent = item[key];
-          row.appendChild(td);
+              document.getElementById("insertDataFormDiv").remove();
+              document.getElementById("insertDataFormHTMLDiv").style.display =
+                "none";
+              impFun();
+              alert(data.message);
+            } catch (error) {
+              console.log(error);
+            }
+          });
+        } catch (error) {
+          console.log(error);
         }
       });
-      const td = document.createElement("td");
-      const delBtn = document.createElement("button");
-      delBtn.className = "btn btn-danger btn-sm";
-      delBtn.innerHTML = "DELETE";
-      td.appendChild(delBtn);
-      row.appendChild(td);
-      tbody.appendChild(row);
 
-      delBtn.addEventListener("click", async () => {
-        const { data } = await axios.delete(
-          `http://localhost:5050/${tableName}/${item.id}`
-        );
-        if (!data.success) return alert("Somthing went wrong!");
-        alert(data.message);
-        tbody.removeChild(row);
+      if (data.result.length === 0) {
+        return alert(`No data found in ${tableName} table!`);
+      }
+
+      const table = document.createElement("table");
+
+      table.className = "w-100 table table-bordered";
+      table.setAttribute("id", "dbTableDetails");
+
+      // Create table headers dynamically based on the data keys
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      const headerKeys = Object.keys(data.result[0]);
+
+      headerKeys.forEach((key) => {
+        const th = document.createElement("th");
+        if (key !== "updatedAt") {
+          th.textContent = key;
+          headerRow.appendChild(th);
+        }
       });
-    });
 
-    table.appendChild(tbody);
-    rightDiv.appendChild(table);
+      const action = document.createElement("th");
+      action.textContent = "action";
+      headerRow.appendChild(action);
+
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      // Create table body with data rows
+      const tbody = document.createElement("tbody");
+      data.result.forEach((item) => {
+        const row = document.createElement("tr");
+        headerKeys.forEach((key) => {
+          // console.log(item.id);
+          const td = document.createElement("td");
+          if (key !== "updatedAt") {
+            td.textContent = item[key];
+            row.appendChild(td);
+          }
+        });
+        const td = document.createElement("td");
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-danger btn-sm";
+        delBtn.innerHTML = "DELETE";
+        td.appendChild(delBtn);
+        row.appendChild(td);
+        tbody.appendChild(row);
+
+        delBtn.addEventListener("click", async () => {
+          const { data } = await axios.delete(
+            `http://localhost:5050/${tableName}/${item.id}`
+          );
+          if (!data.success) return alert("Somthing went wrong!");
+          alert(data.message);
+          tbody.removeChild(row);
+        });
+      });
+
+      table.appendChild(tbody);
+      rightDiv.appendChild(table);
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 }
